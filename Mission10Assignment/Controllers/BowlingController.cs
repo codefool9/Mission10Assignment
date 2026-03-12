@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mission10Assignment.Models;
+using SQLitePCL;
 
 namespace Mission10Assignment.Controllers
 {
@@ -14,5 +15,12 @@ namespace Mission10Assignment.Controllers
         {
             _repo = temp;
         }
+
+        [HttpGet]
+        public IEnumerable<Bowler> Get()
+        {
+            return _repo.GetBowlers();
+        }
     }
 }
+

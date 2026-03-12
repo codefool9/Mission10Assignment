@@ -4,13 +4,27 @@ using Mission10Assignment.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<BowlingLeagueContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BowlingConnection")));
+
+builder.Services.AddScoped<IBowlerRepository, EFBowlerRepository>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -19,6 +33,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 
